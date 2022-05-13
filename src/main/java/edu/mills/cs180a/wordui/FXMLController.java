@@ -1,29 +1,18 @@
 package edu.mills.cs180a.wordui;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-import edu.mills.cs180a.wordui.model.SampleData;
-import edu.mills.cs180a.wordui.model.WordRecord;
-import edu.mills.cs180a.wordui.model.WordRecord.SortOrder;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+import java.net.*;
+import java.util.*;
+import edu.mills.cs180a.wordui.model.*;
+import edu.mills.cs180a.wordui.model.WordRecord.*;
+import javafx.beans.binding.*;
+import javafx.beans.property.*;
+import javafx.beans.value.*;
+import javafx.collections.*;
+import javafx.collections.transformation.*;
+import javafx.event.*;
+import javafx.fxml.*;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 
 public class FXMLController implements Initializable {
     @FXML
@@ -114,8 +103,7 @@ public class FXMLController implements Initializable {
     }
 
     private void populateChoiceBox() {
-        sortChoiceBox.setItems(FXCollections.observableArrayList(
-                WordRecord.SortOrder.values()));
+        sortChoiceBox.setItems(FXCollections.observableArrayList(WordRecord.SortOrder.values()));
         sortChoiceBox.setValue(WordRecord.SortOrder.ALPHABETICALLY_FORWARD);
     }
 
@@ -128,13 +116,18 @@ public class FXMLController implements Initializable {
         // been made, or any field is empty or invalid.
         updateButton.disableProperty()
                 .bind(listView.getSelectionModel().selectedItemProperty().isNull()
-                        .or(modifiedProperty.not())
-                        .or(freqValidProperty.not())
+                        .or(modifiedProperty.not()).or(freqValidProperty.not())
                         .or(wordTextField.textProperty().isEmpty())
                         .or(definitionTextArea.textProperty().isEmpty()));
 
-        // TODO: Disable the Create button if an existing entry is selected or any
+        // Disable the Create button if an existing entry is selected or any
         // field is empty or invalid.
+        createButton.disableProperty()
+                .bind(listView.getSelectionModel().selectedItemProperty().isNotNull()
+                        .or(modifiedProperty.not()).or(freqValidProperty.not())
+                        .or(wordTextField.textProperty().isEmpty())
+                        .or(definitionTextArea.textProperty().isEmpty()));
+
     }
 
     // A frequency is valid if it is an integer and is at least 0.
@@ -162,11 +155,8 @@ public class FXMLController implements Initializable {
     @FXML
     private void createButtonAction(ActionEvent actionEvent) {
         System.out.println("Create");
-        WordRecord wordRecord =
-                new WordRecord(
-                        wordTextField.getText(),
-                        Integer.parseInt(frequencyTextField.getText()),
-                        definitionTextArea.getText());
+        WordRecord wordRecord = new WordRecord(wordTextField.getText(),
+                Integer.parseInt(frequencyTextField.getText()), definitionTextArea.getText());
         wordRecordList.add(wordRecord);
         listView.getSelectionModel().select(wordRecord); // select the new item
     }
